@@ -20,6 +20,33 @@ function getWeightedHeight() {
   return heightsProb[heightsProb.length - 1].height;
 }
 
+function measureTextWidth(text, fontSize, isBold) {
+  // 計測用の span
+  const span = document.createElement("span");
+  span.textContent = text;
+
+  // 同じフォント設定
+  span.style.fontSize = fontSize + "px";
+  span.style.fontWeight = isBold ? "bold" : "normal";
+
+  // 画面外or非表示に配置しつつ、でもlayoutには乗る
+  span.style.position = "absolute";
+  span.style.visibility = "hidden";
+  span.style.whiteSpace = "nowrap";
+  span.style.left = "-9999px";
+  span.style.top = "-9999px";
+
+  document.body.appendChild(span);
+
+  // 計測: offsetWidth が定番
+  const w = span.offsetWidth + 5;
+
+  // 終わったら削除
+  document.body.removeChild(span);
+
+  return w;
+}
+
 /************************************************
   タイル作成関数
  ************************************************/
@@ -42,15 +69,15 @@ function createLoopTile(items, parent, offsetX, tileWidth, tileHeight) {
     el.style.height = it.h + "px";
     el.textContent = it.text;
 
-    // ★ 高さに応じてフォントサイズ & ボールド
+    // ★ 高さに応じたフォントサイズ & ボールド
     if (it.h === 20) {
-      el.style.fontSize = "1em";
+      el.style.fontSize = "20px";
       el.style.fontWeight = "normal";
     } else if (it.h === 40) {
-      el.style.fontSize = "1.75em";
+      el.style.fontSize = "40px";
       el.style.fontWeight = "normal";
     } else if (it.h === 60) {
-      el.style.fontSize = "2em";
+      el.style.fontSize = "60px";
       el.style.fontWeight = "bold";
     }
 
@@ -82,11 +109,14 @@ function getRandomItems(count) {
 
     let h = getWeightedHeight();
 
-    let scale = 1.0;
-    if (h === 40) scale = 1.5;
-    if (h === 60) scale = 1.75;
+    let scale = 20;
+    if (h === 40) scale = 40;
+    if (h === 60) scale = 60;
 
-    let w = text.length * 20 * scale;
+    //実際にspan要素を作って、その幅を取得する
+    let w = measureTextWidth(text, scale, h === 60);
+    // document.body.removeChild(span);
+    // let w = text.length * 20 * scale;
 
     let it = new rect_xywh(0, 0, w, h);
     it.text = text;
@@ -129,7 +159,7 @@ function animate() {
       container.removeChild(tile.tileDiv);
 
       // 新アイテム
-      let newItems = getRandomItems(20);
+      let newItems = getRandomItems(30);
       packFixedHeight(newItems, tileHeight);
       let newW = newItems.reduce((mx, it) => Math.max(mx, it.x + it.w), 0);
 
