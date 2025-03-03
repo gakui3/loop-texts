@@ -1,0 +1,24 @@
+body {
+  font-family: sans-serif;
+  width: 80%;
+  margin: 0;
+}
+
+#loop-container {
+  position: relative;
+  overflow: hidden;
+  width: 700px;
+  height: 180px;
+  border: 1px solid red;
+}
+
+.loop-text {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+  /* border: 1px solid #999; */
+}
